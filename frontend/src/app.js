@@ -3,10 +3,8 @@ import { Send, Shield, Menu, X, Plus, MessageSquare, Trash2, Clock, Terminal, Ch
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 
-// Backend API URL
 const API_URL = 'http://localhost:8000';
 
-// Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAKsSOs33PBDieqyj5Rnwon-5P53hxpjwk",
   authDomain: "imagine-group-26.firebaseapp.com",
@@ -17,7 +15,6 @@ const firebaseConfig = {
   measurementId: "G-P6WCE14J42"
 };
 
-// Firebase Auth initialization
 let firebaseAuth = null;
 let googleProvider = null;
 let appleProvider = null;
@@ -36,7 +33,6 @@ const initializeFirebase = () => {
   }
 };
 
-// Login Component
 function Login({ onLoginSuccess }) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -45,7 +41,6 @@ function Login({ onLoginSuccess }) {
   const [firebaseReady, setFirebaseReady] = useState(false);
 
   useEffect(() => {
-    // Initialize Firebase on component mount
     const ready = initializeFirebase();
     setFirebaseReady(ready);
   }, []);
@@ -239,7 +234,6 @@ function Login({ onLoginSuccess }) {
   );
 }
 
-// Main Chat Component
 export default function CyberSecurityChat() {
   const [user, setUser] = useState(null);
   const [chats, setChats] = useState([
@@ -607,4 +601,218 @@ export default function CyberSecurityChat() {
                 <div className="grid grid-cols-3 gap-4 mb-8">
                   {['Network\nScanning', 'Vulnerability\nTesting', 'Security\nAuditing'].map((text, idx) => (
                     <div key={idx} className="bg-gray-800 bg-opacity-40 backdrop-blur-sm border border-cyan-500 border-opacity-20 rounded-2xl p-6 hover:border-opacity-40 transition-all">
-                      <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb
+                      <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <Shield className="w-6 h-6" />
+                      </div>
+                      <p className="text-sm font-medium whitespace-pre-line">{text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6 max-w-5xl mx-auto">
+              {currentChat.messages.map((msg, idx) => (
+                <div key={idx}>
+                  {msg.sender === 'user' ? (
+                    <div className="flex justify-end">
+                      <div className="max-w-[80%] px-5 py-4 rounded-3xl shadow-lg bg-gradient-to-r from-cyan-600 to-blue-600 text-white">
+                        <div className="whitespace-pre-line leading-relaxed">{msg.text}</div>
+                      </div>
+                    </div>
+                  ) : msg.sender === 'system' ? (
+                    <div className="flex justify-start">
+                      <div className="max-w-[80%] px-5 py-4 rounded-3xl shadow-lg bg-gradient-to-r from-green-600 to-emerald-600 text-white">
+                        <div className="whitespace-pre-line leading-relaxed">{msg.text}</div>
+                      </div>
+                    </div>
+                  ) : msg.response?.type === 'tool_execution' ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-cyan-400 mb-2">
+                        <Shield className="w-4 h-4" />
+                        <span className="text-sm font-semibold uppercase tracking-wide">Agent Response</span>
+                      </div>
+
+                      <div className="bg-blue-900 bg-opacity-30 border border-blue-500 border-opacity-40 rounded-xl p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Terminal className="w-5 h-5 text-blue-400" />
+                          <span className="font-mono text-sm font-bold text-blue-300">Tool Call Request</span>
+                        </div>
+                        <div className="space-y-2 font-mono text-sm">
+                          <div className="text-gray-300">
+                            <span className="text-cyan-400">name:</span> {msg.response.toolData.toolCall.name}
+                          </div>
+                          <div className="text-gray-300">
+                            <span className="text-cyan-400">args:</span> {JSON.stringify(msg.response.toolData.toolCall.args, null, 2)}
+                          </div>
+                          <div className="text-gray-300">
+                            <span className="text-cyan-400">id:</span> {msg.response.toolData.toolCall.id}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-green-900 bg-opacity-30 border border-green-500 border-opacity-40 rounded-xl p-4">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-5 h-5 text-green-400" />
+                          <span className="font-mono text-sm font-bold text-green-300">
+                            --------- {msg.response.toolData.validation} ---------
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800 bg-opacity-90 border border-cyan-500 border-opacity-20 rounded-xl p-5 shadow-lg">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Terminal className="w-5 h-5 text-cyan-400" />
+                          <span className="font-mono text-sm font-bold text-cyan-300">Tool Execution Result</span>
+                        </div>
+                        <div className="space-y-2 font-mono text-xs text-gray-300">
+                          <div><span className="text-cyan-400">Tool_name =</span> {msg.response.toolData.toolCall.name}</div>
+                          <div><span className="text-cyan-400">Tool_Args =</span> {JSON.stringify(msg.response.toolData.toolCall.args)}</div>
+                          <div className="pt-3 border-t border-gray-700">
+                            <span className="text-cyan-400">Content:</span>
+                            <pre className="mt-2 text-green-400 whitespace-pre-wrap leading-relaxed">{msg.response.toolData.output}</pre>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-start">
+                      <div className="max-w-[80%] px-5 py-4 rounded-3xl shadow-lg bg-gray-800 bg-opacity-90 backdrop-blur-sm border border-cyan-500 border-opacity-20">
+                        <div className="flex items-center gap-2 mb-3 text-cyan-400">
+                          <Shield className="w-4 h-4" />
+                          <span className="text-xs font-semibold uppercase tracking-wide">Security Bot</span>
+                        </div>
+                        <div className="whitespace-pre-line leading-relaxed">{msg.response.text}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {typing && (
+                <div className="flex justify-start">
+                  <div className="bg-gray-800 bg-opacity-90 px-6 py-4 rounded-3xl border border-cyan-500 border-opacity-20">
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 bg-cyan-400 rounded-full animate-bounce"></div>
+                      <div className="w-3 h-3 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-3 h-3 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="border-t border-cyan-500 border-opacity-30 p-6 bg-black bg-opacity-50 backdrop-blur-lg">
+          <div className="max-w-4xl mx-auto flex gap-3">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+              placeholder="Ask your security question here..."
+              className="flex-1 bg-gray-800 bg-opacity-80 text-white rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-500 border border-cyan-500 border-opacity-30 placeholder-gray-500"
+            />
+            <button
+              onClick={sendMessage}
+              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-2xl px-8 py-4 flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/20"
+            >
+              <Send className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {showToolModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl border-2 border-cyan-500 border-opacity-30 max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl">
+            <div className="p-6 border-b border-cyan-500 border-opacity-30 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
+                  <Shield className="w-7 h-7" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">Available Security Tools</h2>
+                  <p className="text-sm text-gray-400">Select tools to configure and launch</p>
+                </div>
+              </div>
+              <button onClick={() => setShowToolModal(false)} className="p-2 hover:bg-red-500 hover:bg-opacity-20 rounded-xl transition-colors">
+                <X className="w-6 h-6 text-red-400" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="grid grid-cols-2 gap-4">
+                {allTools.map(tool => {
+                  const isSelected = selectedTools.includes(tool.id);
+                  const isLaunched = launchedTools.includes(tool.id);
+                  
+                  return (
+                    <button
+                      key={tool.id}
+                      onClick={() => !isLaunched && toggleToolSelection(tool.id)}
+                      disabled={isLaunched}
+                      className={`p-5 rounded-2xl border-2 transition-all text-left group ${
+                        isLaunched
+                          ? 'bg-green-900 bg-opacity-20 border-green-500 border-opacity-50 cursor-not-allowed'
+                          : isSelected
+                          ? 'bg-cyan-600 bg-opacity-20 border-cyan-400 border-opacity-70 shadow-lg shadow-cyan-500/20'
+                          : 'bg-gray-800 bg-opacity-40 border-cyan-500 border-opacity-20 hover:border-cyan-400 hover:border-opacity-50 hover:shadow-lg'
+                      }`}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center bg-gradient-to-br ${tool.color} shadow-lg`}>
+                          <Shield className="w-7 h-7 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-lg mb-1">{tool.name}</h3>
+                          <p className="text-sm text-gray-400">{tool.description}</p>
+                        </div>
+                        {isLaunched && (
+                          <span className="text-xs bg-green-500 bg-opacity-30 text-green-300 px-3 py-1 rounded-full font-medium">
+                            Active
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-cyan-500 border-opacity-30 flex items-center justify-between bg-gray-900 bg-opacity-50">
+              <div className="text-sm text-gray-400">
+                {selectedTools.length > 0 ? (
+                  <span className="text-cyan-400 font-medium">{selectedTools.length} tool(s) selected</span>
+                ) : (
+                  <span>Select tools to launch</span>
+                )}
+              </div>
+              <button
+                onClick={launchTools}
+                disabled={selectedTools.length === 0 || launching}
+                className={`px-8 py-3 rounded-xl font-bold flex items-center gap-3 transition-all ${
+                  selectedTools.length === 0 || launching
+                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-xl shadow-cyan-500/30'
+                }`}
+              >
+                {launching ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Configuring Tools...</span>
+                  </>
+                ) : (
+                  <>
+                    <Shield className="w-5 h-5" />
+                    <span>Launch Selected Tools</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
