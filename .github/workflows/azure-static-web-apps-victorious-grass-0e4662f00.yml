@@ -31,8 +31,11 @@ jobs:
           app_location: "frontend" # App source code path
           api_location: "" # Api source code path - optional
           output_location: "build"
-          app_build_command: "npm run build"
-          node_version: "20" # Built app content directory - optional
+          app_build_command: "npm run build"  # Built app content directory - optional
+          node_version: "20"
+        env:
+                CI: false
+                BROWSERSLIST_IGNORE_OLD_DATA: true
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
@@ -46,5 +49,6 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_VICTORIOUS_GRASS_0E4662F00 }}
           action: "close"
+
 
 
