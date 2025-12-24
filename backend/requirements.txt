@@ -10,3 +10,4 @@ anthropic
 python-dotenv
 requests
 gunicorn
+mcp
