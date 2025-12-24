@@ -6,3 +6,4 @@ langchain-ollama==0.1.0
 langgraph==0.0.20
 mcp==0.1.0
 jsonschema==4.20.0
+gunicorn==21.2.0
