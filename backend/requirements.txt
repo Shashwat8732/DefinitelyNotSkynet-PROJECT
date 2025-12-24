@@ -3,6 +3,7 @@ uvicorn[standard]
 pydantic
 langchain-core
 langchain
+langchain-openai
 langchain-ollama
 langgraph
 anthropic
