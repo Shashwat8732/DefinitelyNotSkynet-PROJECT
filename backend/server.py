@@ -10,7 +10,7 @@ app = FastAPI(title="CyberSec Assistant API")
 agent=ReAct_Agent()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["https://victorious-grass-0e4662f00.2.azurestaticapps.net/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
