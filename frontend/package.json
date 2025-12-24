@@ -13,5 +13,10 @@
     "react-scripts": "5.0.1",
     "lucide-react": "latest",
     "firebase": "latest"
-  }
+  }'
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not iphone_safari 1-14"
+  ]
 }
