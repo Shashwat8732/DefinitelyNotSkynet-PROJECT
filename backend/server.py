@@ -39,6 +39,7 @@ class ToolLaunchRequest(BaseModel):
 async def startup_event():
     try:
         await agent.setup()
+        agent.is_initialized = True # Ek flag set kar dein
         print("✅ Agent setup successful!")
     except Exception as e:
         print(f"❌ Setup failed: {e}")
@@ -62,6 +63,15 @@ async def root():
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     try:
+        if not hasattr(agent, 'is_initialized') or not agent.is_initialized:
+            print("🔄 Agent not ready, attempting setup now...")
+            try:
+                await agent.setup()
+                agent.is_initialized = True
+            except Exception as setup_err:
+                # Agar setup abhi bhi fail ho raha hai
+                raise HTTPException(status_code=500, detail=f"Agent setup failed: {str(setup_err)}")
+                
         if request.chat_id not in conversation_states:
             conversation_states[request.chat_id] = {"messages": []}
         state = conversation_states[request.chat_id]
