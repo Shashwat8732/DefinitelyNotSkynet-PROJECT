@@ -88,7 +88,7 @@ def build_tool_from_schema(tool_name, tool_description, tool_schema, session):
     return tool
 
 def load_config():
-    config_path = "/Users/shashwatraj/Desktop/imagine_group-26/backend/mcp.json"
+    config_path = "mcp.json"
     try:
         with open(config_path) as f:
             config = json.load(f)
