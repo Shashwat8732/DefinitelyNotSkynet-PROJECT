@@ -37,14 +37,6 @@ class ToolLaunchRequest(BaseModel):
 
 @app.on_event("startup")
 async def startup_event():
-    agent.is_initialized = False
-    try:
-        # Background mein task shuru karein taaki server block na ho
-        asyncio.create_task(agent.setup())
-        # Note: Setup function ke andar 'self.is_initialized = True' hona chahiye
-        print("✅ Server live! Agent setup initiated in background...")
-    except Exception as e:
-        print(f"❌ Startup trigger failed: {e}")
     try:
         await agent.setup()
         agent.is_initialized = True # Ek flag set kar dein
