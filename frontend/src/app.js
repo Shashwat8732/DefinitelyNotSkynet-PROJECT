@@ -3,7 +3,7 @@ import { Send, Shield, Menu, X, Plus, MessageSquare, Trash2, Clock, Terminal, Ch
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 
-const API_URL = 'https://definitelynotskynet-e3cba9hchyetekac.eastasia-01.azurewebsites.net';
+const API_URL = 'https://definitelynotskynet.onrender.com';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAKsSOs33PBDieqyj5Rnwon-5P53hxpjwk",
