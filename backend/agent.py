@@ -167,4 +167,4 @@ class ReAct_Agent:
         if self.stack:
             await self.stack.aclose()
 
-self.is_initialized = True
+         
