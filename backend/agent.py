@@ -166,3 +166,5 @@ class ReAct_Agent:
     async def cleanup(self):
         if self.stack:
             await self.stack.aclose()
+
+self.is_initialized = True
