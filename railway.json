@@ -6,6 +6,6 @@
     "context": "backend"
   },
   "deploy": {
-    "startCommand": "python server.py"
+    "startCommand": "python main.py" 
   }
 }
