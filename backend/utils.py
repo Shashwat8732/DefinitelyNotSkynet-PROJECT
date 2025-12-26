@@ -88,8 +88,20 @@ def build_tool_from_schema(tool_name, tool_description, tool_schema, session):
     return tool
 
 def load_config():
-    config_path = "mcp.json"
+    def load_config():
+    # File ka sahi rasta dhundne ke liye absolute path use karna behtar hai
+    import os
+    
+    # Ye line utils.py ki location se mcp.json ka sahi path nikaal legi
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(current_dir, "mcp.json")
+    
     try:
+        # Check karein ki file exist karti hai ya nahi
+        if not os.path.exists(config_path):
+            print(f"❌ Error: mcp.json file nahi mili is path par: {config_path}")
+            return None
+            
         with open(config_path) as f:
             config = json.load(f)
             return config.get("mcpServers", {})
