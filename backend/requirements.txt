@@ -11,4 +11,5 @@ python-dotenv
 requests
 gunicorn
 mcp
-fastapi-cors
+python-multipart
+httpx
