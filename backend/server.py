@@ -141,6 +141,13 @@ async def get_available_tools():
 if __name__ == "__main__":
     import uvicorn
     import os
-    # Render se dynamic port uthane ke liye
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    
+    port = int(os.environ.get("PORT", 8000))  # ✅ Ye line important hai!
+    
+    uvicorn.run(
+        app,
+        host="0.0.0.0",  # ✅ Ye bhi important
+        port=port,
+        log_level="info",
+        timeout_keep_alive=900
+    )
