@@ -1,39 +1,39 @@
 {
-    "mcpServers": {
-        "nmap": {
-            "command": "npx",
-            "args": ["-y", "gc-nmap-mcp"],
-            "env": {
-                "NMAP_PATH": "/Applications/nmap.app/Contents/Resources/bin/nmap"
-            }
-        },
-        "sqlmap": {
-            "command": "npx",
-            "args": ["-y", "gc-sqlmap-mcp"],
-            "env": {
-                "SQLMAP_PATH": "/usr/local/bin/sqlmap"
-            }
-        },
-        "ffuf": {
-            "command": "npx",
-            "args": ["-y", "gc-ffuf-mcp"],
-            "env": {
-                "FFUF_PATH": "/usr/local/bin/ffuf"
-            }
-        },
-        "masscan": {
-            "command": "npx",
-            "args": ["-y", "gc-masscan-mcp"],
-            "env": {
-                "MASSCAN_PATH": "/usr/local/bin/masscan"
-            }
-        },
-        "sslscan": {
-            "command": "npx",
-            "args": ["-y", "gc-sslscan-mcp"],
-            "env": {
-                "SSLSCAN_PATH": "/usr/local/bin/sslscan"
-            }
-        }
+  "mcpServers": {
+    "nmap": {
+      "command": "npx",
+      "args": ["-y", "gc-nmap-mcp"],
+      "env": {
+        "NMAP_PATH": "/usr/bin/nmap"
+      }
+    },
+    "sqlmap": {
+      "command": "npx",
+      "args": ["-y", "gc-sqlmap-mcp"],
+      "env": {
+        "SQLMAP_PATH": "/usr/local/bin/sqlmap"
+      }
+    },
+    "ffuf": {
+      "command": "npx",
+      "args": ["-y", "gc-ffuf-mcp"],
+      "env": {
+        "FFUF_PATH": "/usr/local/bin/ffuf"
+      }
+    },
+    "masscan": {
+      "command": "npx",
+      "args": ["-y", "gc-masscan-mcp"],
+      "env": {
+        "MASSCAN_PATH": "/usr/bin/masscan"
+      }
+    },
+    "sslscan": {
+      "command": "npx",
+      "args": ["-y", "gc-sslscan-mcp"],
+      "env": {
+        "SSLSCAN_PATH": "/usr/local/bin/sslscan"
+      }
     }
+  }
 }
