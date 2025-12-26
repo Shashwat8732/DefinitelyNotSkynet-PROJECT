@@ -88,10 +88,8 @@ def build_tool_from_schema(tool_name, tool_description, tool_schema, session):
     return tool
 
 def load_config():
-    def load_config():
-    # File ka sahi rasta dhundne ke liye absolute path use karna behtar hai
-    import os
     
+    import os
     # Ye line utils.py ki location se mcp.json ka sahi path nikaal legi
     current_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(current_dir, "mcp.json")
@@ -108,7 +106,6 @@ def load_config():
     except Exception as e:
         print(f"Unable to open Config: {e}")
         return None
-
 async def configure_mcp():
     mcp_servers = load_config()
     server_session_dict = {}
