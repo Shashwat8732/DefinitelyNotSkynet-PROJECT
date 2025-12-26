@@ -13,7 +13,6 @@ from utils import validate_arguments, configure_mcp
 load_dotenv()
 
 class AgentState(TypedDict):
-    
     messages: Annotated[Sequence[BaseMessage], add_messages]
     tool_called: str
     tool_args: Dict
@@ -32,29 +31,47 @@ class ReAct_Agent:
 
     async def setup(self, active_tools: list = None):
         """Initialize MCP stack and LLM with filtered tools"""
-        api_key = os.getenv("OPEN_AI_API_KEY")
-        api_base = os.getenv("OPEN_AI_API_BASE")
+        # Support multiple environment variable names
+        api_key = (
+            os.getenv("OPEN_AI_API_KEY") or 
+            os.getenv("OPENAI_API_KEY") or
+            os.getenv("OPENROUTER_API_KEY")
+        )
+        
+        api_base = (
+            os.getenv("OPEN_AI_API_BASE") or
+            os.getenv("OPENAI_API_BASE") or
+            "https://api.openai.com/v1"
+        )
 
         if not api_key:
-            raise ValueError("OPEN_AI_API_KEY not found in environment variables.")
+            print("⚠️ Warning: No API key found. Using default configuration.")
+            print("   Set OPEN_AI_API_KEY or OPENAI_API_KEY environment variable.")
 
-
+        # Initialize MCP servers
+        print("🔌 Initializing MCP servers...")
         self.tools, self.GLOBAL_SCHEMA, self.GLOBAL_NAME_TO_TOOL, self.stack = await configure_mcp()
-        
+        print(f"✅ Loaded {len(self.tools)} tools")
 
+        # Filter tools if specified
         if active_tools is not None:
             self.filtered_tools = [t for t in self.tools if t.name in active_tools]
+            print(f"🔍 Filtered to {len(self.filtered_tools)} active tools")
         else:
             self.filtered_tools = self.tools
 
-
+        # Initialize LLM
         self.llm = ChatOpenAI(
             model="gpt-4o", 
-            api_key=api_key,
+            api_key=api_key if api_key else "dummy-key",
             base_url=api_base,
-        ).bind_tools(self.filtered_tools) 
+        ).bind_tools(self.filtered_tools)
+        
+        print("🤖 LLM initialized")
 
+        # Build graph
         self.graph = self._build_graph()
+        print("📊 Graph built successfully")
 
     def should_continue(self, state: AgentState) -> Literal["tools", "end"]:
         last_message = state["messages"][-1]
@@ -98,19 +115,16 @@ class ReAct_Agent:
         tool_name = state["tool_called"]
         tool_args = state["tool_args"]
         
-
         exec_log = f"🛠️ Executing {tool_name} with arguments: {tool_args}"
         
         tool = self.GLOBAL_NAME_TO_TOOL[tool_name]
         
-
         validation = validate_arguments(tool_args, self.GLOBAL_SCHEMA[tool_name])
         
         if validation == "Valid":
             result_text = await tool.ainvoke(tool_args)
         else:
             result_text = f"Validation Error: {validation}"
-        #print(result_text)
 
         tool_message = ToolMessage(
             content=str(result_text),
@@ -146,12 +160,10 @@ class ReAct_Agent:
             raise RuntimeError("Agent not initialized. Call .setup() first.")
 
         if conversation_state is None:
-            
             input_state = {"messages": [HumanMessage(content=user_query)], "logs": []}
         else:
             input_state = conversation_state
             input_state["messages"].append(HumanMessage(content=user_query))
-            
 
         final_state = await self.graph.ainvoke(input_state)
         
@@ -159,6 +171,7 @@ class ReAct_Agent:
             "state": final_state,
             "response": final_state["messages"][-1].content,
             "tool_called": final_state.get("tool_called"),
+            "tool_args": final_state.get("tool_args"),
             "tool_result": final_state.get("tool_result"),
             "logs": final_state.get("logs", []),
         }
@@ -166,5 +179,3 @@ class ReAct_Agent:
     async def cleanup(self):
         if self.stack:
             await self.stack.aclose()
-
-         
