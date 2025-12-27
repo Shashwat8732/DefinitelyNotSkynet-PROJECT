@@ -155,19 +155,34 @@ class ReAct_Agent:
         workflow.add_edge("tools", "reasoner")
         return workflow.compile()
 
-   async def process_query(self, user_query: str, conversation_state: dict = None):
-        # ... baaki ka code same rahega ...
+    async def process_query(self, user_query: str, conversation_state: dict = None):
+        """Process a user query through the ReAct graph"""
+        if conversation_state is None:
+            conversation_state = {"messages": []}
 
+        input_state = {
+            "messages": conversation_state["messages"] + [HumanMessage(content=user_query)],
+            "tool_called": "",
+            "tool_args": {},
+            "tool_call_id": "",
+            "tool_result": None,
+            "logs": []
+        }
+
+        # Graph ko run karein
         final_state = await self.graph.ainvoke(input_state)
         
-        # FIX: Last message ko safety ke saath extract karein
+        # FIX: Pydantic object handling for Railway/OpenRouter
         last_msg = final_state["messages"][-1]
         
-        # Agar last message object hai toh uska content lein, warna use string banayein
+        # Agar message object hai toh content lein, warna use string banayein
         response_text = getattr(last_msg, 'content', str(last_msg))
 
         return {
-            "state": final_state,
+            "state": {
+                "messages": final_state["messages"],
+                "logs": final_state.get("logs", [])
+            },
             "response": response_text,
             "tool_called": final_state.get("tool_called", ""),
             "tool_args": final_state.get("tool_args", {}),
@@ -175,6 +190,9 @@ class ReAct_Agent:
             "logs": final_state.get("logs", []),
         }
 
+    async def cleanup(self):
+        if self.stack:
+            await self.stack.aclose()
     async def cleanup(self):
         if self.stack:
             await self.stack.aclose()
