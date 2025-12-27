@@ -155,24 +155,23 @@ class ReAct_Agent:
         workflow.add_edge("tools", "reasoner")
         return workflow.compile()
 
-    async def process_query(self, user_query: str, conversation_state: dict = None):
-        if not self.graph:
-            raise RuntimeError("Agent not initialized. Call .setup() first.")
-
-        if conversation_state is None:
-            input_state = {"messages": [HumanMessage(content=user_query)], "logs": []}
-        else:
-            input_state = conversation_state
-            input_state["messages"].append(HumanMessage(content=user_query))
+   async def process_query(self, user_query: str, conversation_state: dict = None):
+        # ... baaki ka code same rahega ...
 
         final_state = await self.graph.ainvoke(input_state)
         
+        # FIX: Last message ko safety ke saath extract karein
+        last_msg = final_state["messages"][-1]
+        
+        # Agar last message object hai toh uska content lein, warna use string banayein
+        response_text = getattr(last_msg, 'content', str(last_msg))
+
         return {
             "state": final_state,
-            "response": final_state["messages"][-1].content,
-            "tool_called": final_state.get("tool_called"),
-            "tool_args": final_state.get("tool_args"),
-            "tool_result": final_state.get("tool_result"),
+            "response": response_text,
+            "tool_called": final_state.get("tool_called", ""),
+            "tool_args": final_state.get("tool_args", {}),
+            "tool_result": str(final_state.get("tool_result", "")),
             "logs": final_state.get("logs", []),
         }
 
